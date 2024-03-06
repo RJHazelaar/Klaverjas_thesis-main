@@ -59,6 +59,8 @@ class MCTS:
     def __init__(self, params: dict, model, player_position: int, **kwargs):
         self.mcts_steps = params["mcts_steps"]
         self.n_of_sims = params["n_of_sims"]
+        # TODO Op 1 zetten om performance ok te houden, meerdere sims hebben geen zin
+        self.n_of_sims = 1
         self.ucb_c = params["ucb_c"]
         self.nn_scaler = params["nn_scaler"]
         self.player_position = player_position
