@@ -23,18 +23,10 @@ def run_test():
     #TODO alphazero for heavy vs standard_alphazero
     # rule, rule_heavy, alphazero
     # Alphazero for heavy vs random rollout test
-    opponent = "rule"
-    multiprocessing = True
-
-    num_rounds = 3000
-    num_rounds = (
-        math.ceil(num_rounds / n_cores) * n_cores
-    )  # make sure rounds is divisible by n_cores and not devide to 0
-
     opponent = "alphazero"
     multiprocessing = True
 
-    num_rounds = 10000
+    num_rounds = 3000
     num_rounds = (
         math.ceil(num_rounds / n_cores) * n_cores
     )  # make sure rounds is divisible by n_cores and not devide to 0

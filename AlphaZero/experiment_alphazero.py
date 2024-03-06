@@ -21,6 +21,7 @@ import csv
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Disable GPU
 parent_dir = os.path.dirname(os.path.realpath(os.path.join(__file__ ,"../")))
 sys.path.append(parent_dir)
+data_dir = parent_dir+"/Data/SL_data/originalDB.csv"
 
 def test_vs_alphazero_player(
     num_rounds: int,
@@ -36,7 +37,7 @@ def test_vs_alphazero_player(
     if num_rounds * (process_id + 1) > 50010:
         raise "too many rounds"
 
-    rounds = pd.read_csv("Data/SL_data/originalDB.csv", delimiter=";", low_memory=False, converters={"Cards": pd.eval})
+    rounds = pd.read_csv(data_dir, delimiter=";", low_memory=False, converters={"Cards": pd.eval})
 
     model1, model2 = None, None
     if model_paths[0] is not None:

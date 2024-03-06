@@ -9,7 +9,6 @@ sys.path.append(parent_dir)
 from AlphaZero.experiment_alphazero import run_test_multiprocess
 
 
-
 def run_test():
     try:
         n_cores = int(os.environ["SLURM_JOB_CPUS_PER_NODE"])
@@ -27,7 +26,7 @@ def run_test():
     opponent = "alphazero"
     multiprocessing = True
 
-    num_rounds = 10000
+    num_rounds = 5000
     num_rounds = (
         math.ceil(num_rounds / n_cores) * n_cores
     )  # make sure rounds is divisible by n_cores and not devide to 0
