@@ -23,7 +23,7 @@ def run_test():
     # rule, rule_heavy, alphazero
     # Alphazero for heavy vs random rollout test
     opponent = "rule"
-    multiprocessing = False
+    multiprocessing = True
 
     num_rounds = 3000
     num_rounds = (

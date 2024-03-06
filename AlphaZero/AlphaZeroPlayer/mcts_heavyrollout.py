@@ -91,7 +91,6 @@ class MCTS:
         #print("staring time:", time.time_ns())
         #print("ending time:", ending_time)
         #t1_start = time.perf_counter()
-
         while time.time_ns() < ending_time:
             simulation += 1
             now = time.time()
@@ -206,7 +205,6 @@ class MCTS:
 
         current_state = copy.deepcopy(state)
         current_node = MCTS_Node()
-
         for simulation in range(self.mcts_steps):
 
             now = time.time()

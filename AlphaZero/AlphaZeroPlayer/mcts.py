@@ -185,6 +185,7 @@ class MCTS:
         return move
     
     def mcts_n_simulations(self, state: State, training: bool, extra_noise_ratio):
+        print("testje")
         legal_moves = state.legal_moves()
         if len(legal_moves) == 1:
             return next(iter(legal_moves))
