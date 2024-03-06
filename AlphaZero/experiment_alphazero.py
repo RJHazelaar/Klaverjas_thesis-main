@@ -21,7 +21,7 @@ import csv
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Disable GPU
 parent_dir = os.path.dirname(os.path.realpath(os.path.join(__file__ ,"../")))
 sys.path.append(parent_dir)
-data_dir = parent_dir+"/Data/SL_data/originalDB.csv"
+data_dir = parent_dir+"/Data/SL_Data/originalDB.csv"
 
 def test_vs_alphazero_player(
     num_rounds: int,
