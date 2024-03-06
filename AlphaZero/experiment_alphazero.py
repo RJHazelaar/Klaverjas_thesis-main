@@ -4,6 +4,7 @@ import os
 import time
 import tensorflow as tf
 import pandas as pd
+import sys
 
 from multiprocessing import Pool, get_context
 from typing import List
@@ -18,7 +19,8 @@ from Lennard.rule_based_agent import Rule_player
 import csv
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Disable GPU
-
+parent_dir = os.path.dirname(os.path.realpath(os.path.join(__file__ ,"../")))
+sys.path.append(parent_dir)
 
 def test_vs_alphazero_player(
     num_rounds: int,
