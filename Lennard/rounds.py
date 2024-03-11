@@ -8,7 +8,7 @@ def other_team(player):
     return (player + 1) % 2
 
 class Round:
-    def __init__(self, starting_player, trump_suit, declarer):
+    def __init__(self, starting_player, trump_suit, declarer, **kwargs):
         self.starting_player = starting_player
         self.current_player = starting_player
         self.trump_suit = trump_suit
@@ -27,7 +27,10 @@ class Round:
             self.cardsleft[i] = ordered_list          
 
         self.deal()
-            
+
+    def round_in_progress(self, starting_player, trump_suit, declarer, cards_players):
+        1 == 1
+
     #Gives each player 8 cards to play with
     def deal(self):
         deck = Deck()

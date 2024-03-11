@@ -113,7 +113,7 @@ def test_vs_rule_player_heavy(
     if num_rounds * (process_id + 1) > 50010:
         raise "too many rounds"
 
-    rounds = pd.read_csv("Data/SL_data/originalDB.csv", delimiter=";", low_memory=False, converters={"Cards": pd.eval})
+    rounds = pd.read_csv(data_dir, delimiter=";", low_memory=False, converters={"Cards": pd.eval})
 
     rule_player = Rule_player()
 
@@ -213,7 +213,7 @@ def test_vs_rule_player(
     if num_rounds * (process_id + 1) > 50010:
         raise "too many rounds"
 
-    rounds = pd.read_csv("Data/SL_data/originalDB.csv", delimiter=";", low_memory=False, converters={"Cards": pd.eval})
+    rounds = pd.read_csv(data_dir, delimiter=";", low_memory=False, converters={"Cards": pd.eval})
 
     rule_player = Rule_player()
 
