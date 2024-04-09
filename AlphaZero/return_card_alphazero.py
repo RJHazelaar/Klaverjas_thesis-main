@@ -30,17 +30,14 @@ def play_cards_csv():
     rounds = pd.read_csv(data_dir, delimiter=",", low_memory=False)
     num_rounds = len(rounds)
 
-    mcts_params = {
-        "mcts_steps": 10,
-        "n_of_sims": 1,
-        "nn_scaler": 0,
-        "ucb_c": 200,
-        "time_limit": 1000,
-    }
-
     rounds["FirstPlayer"] = np.nan
+    # TODO tijdelijke oplossing voor Gaat
+    rounds["Gaat"] = 1
 
     print(rounds.head())
+
+    # current_player
+    
 
     return
 
@@ -88,15 +85,16 @@ def run_test_multiprocess(
     n_cores: int, opponent: str, total_rounds: int, mcts_params: dict, model_paths: List[str], multiprocessing: bool
 ):
 
+    test_function = 1
     rounds_per_process = total_rounds // n_cores
     if rounds_per_process == 0:
         raise Exception("too few rounds to test")
     if opponent == "rule":
-        test_function = test_vs_rule_player
+        1 == 1
     elif opponent == "alphazero":
-        test_function = test_vs_alphazero_player
+        1 == 1
     elif opponent == "rule_heavy":
-        test_function = test_vs_rule_player_heavy
+        1 == 1
     else:
         raise Exception("mode not found")
 
