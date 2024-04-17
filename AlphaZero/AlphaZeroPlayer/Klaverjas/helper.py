@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 def card_to_suit(card: int) -> int:
     return card // 10
 
@@ -30,3 +32,10 @@ def card_untransform(card: int, trump_suit: int) -> int:
         return card_to_value(card)
     else:
         return card
+
+def hand_transform(_player_hands: list, trump_suit: int) -> list:
+    player_hands = deepcopy(_player_hands)
+    for hand in player_hands:
+        for index, card in enumerate(hand):
+            hand[index]= card_transform(card.id, trump_suit)
+    return player_hands

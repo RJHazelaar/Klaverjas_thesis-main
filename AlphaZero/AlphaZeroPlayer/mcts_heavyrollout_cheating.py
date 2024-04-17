@@ -71,15 +71,19 @@ class MCTS:
             self.time_limit = params["time_limit"]
         except:
             self.time_limit = None
+        try:
+            self.e_cheat = params["e_cheat"]
+        except:
+            self.e_cheat = 0 # 0% chance of using the cheating determinization
 
-    def __call__(self, state: State, training: bool, extra_noise_ratio):
+    def __call__(self, state: State, training: bool, extra_noise_ratio, player_hands):
         if self.time_limit != None:
-            move = self.mcts_timer(state, training, extra_noise_ratio)
+            move = self.mcts_timer(state, training, extra_noise_ratio, player_hands)
         else:
-            move = self.mcts_n_simulations(state, training, extra_noise_ratio)
+            move = self.mcts_n_simulations(state, training, extra_noise_ratio, player_hands)
         return move
 
-    def mcts_timer(self, state: State, training: bool, extra_noise_ratio):
+    def mcts_timer(self, state: State, training: bool, extra_noise_ratio, player_hands):
         legal_moves = state.legal_moves()
         if len(legal_moves) == 1:
             return next(iter(legal_moves))
@@ -97,7 +101,10 @@ class MCTS:
             simulation += 1
             now = time.time()
             # Determination
-            current_state.set_determinization()
+            if random.random() < self.e_cheat:
+                current_state.set_determinization_cheat(player_hands)
+            else:    
+                current_state.set_determinization()
             self.tijden[0] += time.time() - now
             now = time.time()
             # Selection
@@ -200,7 +207,7 @@ class MCTS:
         return move
 
 
-    def mcts_n_simulations(self, state: State, training: bool, extra_noise_ratio):
+    def mcts_n_simulations(self, state: State, training: bool, extra_noise_ratio, player_hands):
         legal_moves = state.legal_moves()
         if len(legal_moves) == 1:
             return next(iter(legal_moves))
@@ -211,7 +218,10 @@ class MCTS:
 
             now = time.time()
             # Determination
-            current_state.set_determinization()
+            if random.random() < self.e_cheat:
+                current_state.set_determinization_cheat(player_hands)
+            else:    
+                current_state.set_determinization()
             self.tijden[0] += time.time() - now
             now = time.time()
             # Selection

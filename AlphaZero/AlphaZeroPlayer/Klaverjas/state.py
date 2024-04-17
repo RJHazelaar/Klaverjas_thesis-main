@@ -62,11 +62,11 @@ class State:
 
     def set_determinization(self):
         print("own hands: ", self.hands)
+        print("self.own_position: ", self.own_position)
         other_players = [0, 1, 2, 3]
         other_players.pop(self.own_position)
 
         possible_cards = [self.possible_cards[i].copy() for i in other_players]
-        #TODO
         print ("possible cards: ", possible_cards)
 
         cards_left = self.cards_left.copy()
@@ -90,6 +90,8 @@ class State:
                 players.append(2)
             all_cards2.append((card, players))
 
+
+        print("all cards 2: ", all_cards2)
         hands = [set(), set(), set()]
         if not self.find_determinization(all_cards2, hands, possible_cards, cards_left):
             raise Exception("No determinization found")
@@ -146,16 +148,42 @@ class State:
             return False
 
     def set_determinization_cheat(self, player_hands):
-        print("own hands: ", self.hands)
         other_players = [0, 1, 2, 3]
         other_players.pop(self.own_position)
-        print("player_hands: ", player_hands)
-        possible_cards = [self.possible_cards[i].copy() for i in other_players]
-        print("possible cards: ", possible_cards)
-        for player in other_players:
-            for card in player_hands[player]:
-                self.hands[player] = player_hands[player]
-            print("player:", player, " hand: ", self.hands[player])
+
+        possible_cards = [self.possible_cards[i].copy() for i in other_players] #WRONG?
+
+        other_player_hands = player_hands.copy()
+        other_player_hands.pop(self.own_position)
+
+        cards_left = self.cards_left.copy()
+        cards_left.pop(self.own_position)
+
+        all_cards = list(possible_cards[0] | possible_cards[1] | possible_cards[2]) #WRONG?
+        all_cards2 = []
+
+        for card in all_cards:
+            players = []
+            if card.id in other_player_hands[0]:
+                players.append(0)
+            elif card.id in other_player_hands[1]:
+                players.append(1)
+            elif card.id in other_player_hands[2]:
+                players.append(2)
+            all_cards2.append((card, players))
+
+
+        all_cards2 = []
+        for player in range(len(other_players)):
+            for id in other_player_hands[player]: 
+                all_cards2.append((Card(id), [player]))
+
+        hands = [set(), set(), set()]
+        if not self.find_determinization(all_cards2, hands, possible_cards, cards_left):
+            raise Exception("No determinization found")
+        
+        for index, player in enumerate(other_players):
+            self.hands[player] = hands[index]
 
     def update_possible_cards(self, played_card: Card, reversable: bool):
 

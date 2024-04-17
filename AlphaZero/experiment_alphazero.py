@@ -259,9 +259,13 @@ def test_vs_rule_player(
                 else:
                     tijd = time.time()
                     if current_player == 0:
+                        player_hands = round.player_hands
+                        legal_moves = round.legal_moves()
                         played_card = alpha_player_0.get_move()
                         played_card = card_untransform(played_card.id, ["k", "h", "r", "s"].index(round.trump_suit))
                     else:
+                        player_hands = round.player_hands
+                        legal_moves = round.legal_moves()
                         played_card = alpha_player_2.get_move()
                         played_card = card_untransform(played_card.id, ["k", "h", "r", "s"].index(round.trump_suit))
                     alpha_eval_time += time.time() - tijd

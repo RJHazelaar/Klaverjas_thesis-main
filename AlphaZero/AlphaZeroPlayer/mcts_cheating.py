@@ -207,7 +207,7 @@ class MCTS:
             # Determination
             if random.random() < self.e_cheat:
                 current_state.set_determinization_cheat(player_hands)
-            else:    
+            else:
                 current_state.set_determinization()
             self.tijden[0] += time.time() - now
             now = time.time()

@@ -10,7 +10,7 @@ from multiprocessing import Pool, get_context
 from typing import List
 
 from AlphaZero.AlphaZeroPlayer.Klaverjas.card import Card
-from AlphaZero.AlphaZeroPlayer.Klaverjas.helper import card_transform, card_untransform
+from AlphaZero.AlphaZeroPlayer.Klaverjas.helper import card_transform, card_untransform, hand_transform
 from AlphaZero.AlphaZeroPlayer.alphazero_player_cheating import AlphaZero_player_cheating
 from AlphaZero.AlphaZeroPlayer.alphazero_player_heavyrollout_cheating import AlphaZero_player_heavyrollout_cheating
 from Lennard.rounds import Round
@@ -124,8 +124,8 @@ def test_vs_rule_player_heavy(
             print("model not found")
             raise Exception("model not found")
 
-    alpha_player_0 = AlphaZero_player_heavyrollout_cheating(0, mcts_params, model)
-    alpha_player_2 = AlphaZero_player_heavyrollout_cheating(2, mcts_params, model)
+    alpha_cheat_player_0 = AlphaZero_player_heavyrollout_cheating(0, mcts_params, model)
+    alpha_cheat_player_2 = AlphaZero_player_heavyrollout_cheating(2, mcts_params, model)
 
     for round_num in range(num_rounds * process_id, num_rounds * (process_id + 1)):
         # round = Round((starting_player + 1) % 4, random.choice(['k', 'h', 'r', 's']), random.choice([0,1,2,3]))
@@ -144,8 +144,8 @@ def test_vs_rule_player_heavy(
             cards = rounds.loc[round_num - 1]["Cards"]
             round.set_cards(cards[3:] + cards[:3])
 
-        alpha_player_0.new_round_Round(round)
-        alpha_player_2.new_round_Round(round)
+        alpha_cheat_player_0.new_round_Round(round)
+        alpha_cheat_player_2.new_round_Round(round)
         for trick in range(8):
             for j in range(4):
 
@@ -158,10 +158,14 @@ def test_vs_rule_player_heavy(
                 else:
                     tijd = time.time()
                     if current_player == 0:
-                        played_card = alpha_player_0.get_move()
+                        player_hands = round.player_hands
+                        player_hands = hand_transform(player_hands, ["k", "h", "r", "s"].index(round.trump_suit))
+                        played_card = alpha_cheat_player_0.get_move(player_hands)
                         played_card = card_untransform(played_card.id, ["k", "h", "r", "s"].index(round.trump_suit))
                     else:
-                        played_card = alpha_player_2.get_move()
+                        player_hands = round.player_hands
+                        player_hands = hand_transform(player_hands, ["k", "h", "r", "s"].index(round.trump_suit))
+                        played_card = alpha_cheat_player_2.get_move(player_hands)
                         played_card = card_untransform(played_card.id, ["k", "h", "r", "s"].index(round.trump_suit))
                     alpha_eval_time += time.time() - tijd
                     moves = round.legal_moves()
@@ -180,13 +184,13 @@ def test_vs_rule_player_heavy(
 
                 round.play_card(played_card)
                 move = Card(card_transform(played_card.id, ["k", "h", "r", "s"].index(round.trump_suit)))
-                alpha_player_0.update_state(move)
-                alpha_player_2.update_state(move)
+                alpha_cheat_player_0.update_state(move)
+                alpha_cheat_player_2.update_state(move)
 
         for i in range(5):
-            mcts_times[i] += alpha_player_0.tijden[i]
+            mcts_times[i] += alpha_cheat_player_0.tijden[i]
 
-        scores_alpha.append(alpha_player_0.state.get_score(0))
+        scores_alpha.append(alpha_cheat_player_0.state.get_score(0))
         scores_round.append(round.get_score(0))
         if scores_alpha[-1] != scores_round[-1]:
             print("scores_alpha not always equal to scores_round")
@@ -259,10 +263,12 @@ def test_vs_rule_player(
                     tijd = time.time()
                     if current_player == 0:
                         player_hands = round.player_hands
+                        player_hands = hand_transform(player_hands, ["k", "h", "r", "s"].index(round.trump_suit))
                         played_card = alpha_cheat_player_0.get_move(player_hands)
                         played_card = card_untransform(played_card.id, ["k", "h", "r", "s"].index(round.trump_suit))
                     else:
                         player_hands = round.player_hands
+                        player_hands = hand_transform(player_hands, ["k", "h", "r", "s"].index(round.trump_suit))
                         played_card = alpha_cheat_player_2.get_move(player_hands)
                         played_card = card_untransform(played_card.id, ["k", "h", "r", "s"].index(round.trump_suit))
                     alpha_eval_time += time.time() - tijd
