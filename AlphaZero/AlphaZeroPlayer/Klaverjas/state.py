@@ -61,23 +61,17 @@ class State:
         self.tricks = [Trick(self.current_player)]
 
     def set_determinization(self):
-        print("own hands: ", self.hands)
-        print("self.own_position: ", self.own_position)
         other_players = [0, 1, 2, 3]
         other_players.pop(self.own_position)
 
         possible_cards = [self.possible_cards[i].copy() for i in other_players]
-        print ("possible cards: ", possible_cards)
 
         cards_left = self.cards_left.copy()
         cards_left.pop(self.own_position)
-        print ("cards left: ", cards_left)
 
 
         all_cards = list(possible_cards[0] | possible_cards[1] | possible_cards[2])
         random.shuffle(all_cards)
-
-        print ("all cards: ", all_cards)
 
         all_cards2 = []
         for card in all_cards:
@@ -90,8 +84,6 @@ class State:
                 players.append(2)
             all_cards2.append((card, players))
 
-
-        print("all cards 2: ", all_cards2)
         hands = [set(), set(), set()]
         if not self.find_determinization(all_cards2, hands, possible_cards, cards_left):
             raise Exception("No determinization found")
