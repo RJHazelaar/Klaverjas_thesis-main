@@ -18,6 +18,7 @@ class MCTS_Node:
         self.score = 0
         self.visits = 0
         self.own_team = own_team
+        self.trials_where_parent_visited_and_child_available = 0
 
     def __repr__(self) -> str:
         return f"Node({self.move}, {self.parent.move}, {self.score}, {self.visits})"
@@ -45,11 +46,14 @@ class MCTS_Node:
         legal_children = [child for child in self.children if child.move in self.legal_moves]
         for child in legal_children:
             if child.visits == 0:
+                child.trials_where_parent_visited_and_child_available += 1
                 return child
             if self.own_team:
-                ucbs.append(child.score / child.visits + c * np.sqrt(np.log(simulation) / child.visits))
+                child.trials_where_parent_visited_and_child_available += 1
+                ucbs.append(child.score / child.visits + c * np.sqrt(np.log(child.trials_where_parent_visited_and_child_available) / child.visits))
             else:
-                ucbs.append(-child.score / child.visits + c * np.sqrt(np.log(simulation) / child.visits))
+                child.trials_where_parent_visited_and_child_available += 1
+                ucbs.append(-child.score / child.visits + c * np.sqrt(np.log(child.trials_where_parent_visited_and_child_available) / child.visits))
         index_max = np.argmax(np.array([ucbs]))
         return legal_children[index_max]
 

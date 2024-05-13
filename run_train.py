@@ -2,6 +2,7 @@ import os
 import wandb
 import math
 import time
+import sys
 
 from AlphaZero.train_alphazero import train
 from AlphaZero.AlphaZeroPlayer.networks import create_simple_nn, create_normal_nn
@@ -102,7 +103,7 @@ def main():
         cluster = "local"
     print(f"Using {n_cores} cores on {cluster}")
 
-    model_name = "final?"
+    model_name = "final"
     run_settings = {
         "project_name": "Thesis_test17",
         "model_name": model_name,

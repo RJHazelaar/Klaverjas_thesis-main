@@ -6,7 +6,7 @@ import sys
 
 parent_dir = os.path.dirname(os.path.realpath(os.path.join(__file__ ,"../..")))
 sys.path.append(parent_dir)
-from AlphaZero.experiment_test import run_test_multiprocess
+from AlphaZero.experiment_alphazero import run_test_multiprocess
 
 
 def run_test():
@@ -21,10 +21,9 @@ def run_test():
     n_cores = os.cpu_count()
     #TODO rule for heavy vs rule
     #TODO alphazero for heavy vs standard_alphazero
-    # rule, rule_test, alphazero
-    #rule_test for test versus rule_based
+    # rule, rule_heavy, alphazero
     # Alphazero for heavy vs random rollout test
-    opponent = "rule_test"
+    opponent = "rule"
     multiprocessing = True #TODO
 
     num_rounds = 10000
@@ -33,10 +32,11 @@ def run_test():
     )  # make sure rounds is divisible by n_cores and not devide to 0
 
     mcts_params = {
-        "mcts_steps": 50,
+        "mcts_steps": 200,
         "n_of_sims": 1,
         "nn_scaler": 0,
         "ucb_c": 200,
+        "steps_per_determinization": 40,
     }
 
     # model_paths = ["SL_models/SL_model_0.h5", None]

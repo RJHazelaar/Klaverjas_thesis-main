@@ -4,6 +4,7 @@ import copy
 import random
 import numpy as np
 import time
+from collections import Counter
 
 from AlphaZero.AlphaZeroPlayer.Klaverjas.card import Card
 from AlphaZero.AlphaZeroPlayer.Klaverjas.state import State
@@ -68,14 +69,35 @@ class MCTS:
             self.time_limit = params["time_limit"]
         except:
             self.time_limit = None
+        try: 
+            self.steps_per_determinization = params["steps_per_determinization"]
+        except:
+            print("no steps per determinization")
 
     def __call__(self, state: State, training: bool, extra_noise_ratio):
         if self.time_limit != None:
             move = self.mcts_timer(state, training, extra_noise_ratio)
         else:
-            move = self.mcts_n_simulations(state, training, extra_noise_ratio)
+            move = self.pimc_call(state, training, extra_noise_ratio)
         return move
     
+    def pimc_call(self, state, training, extra_noise_ratio):
+        legal_moves = state.legal_moves()
+        best_moves = []
+        for determinization in range(self.mcts_steps // self.steps_per_determinization):
+            move = self.mcts_n_simulations(state, training, extra_noise_ratio, self.steps_per_determinization)
+            best_moves.append(move.id)
+        
+        if self.mcts_steps % self.steps_per_determinization > 5:
+            move = self.mcts_n_simulations(state, training, extra_noise_ratio, self.mcts_steps % self.steps_per_determinization)
+            best_moves.append(move.id)
+        
+        c = Counter(best_moves)
+        best_move = (c.most_common(1)[0])[0]
+        for move in legal_moves:
+            if move.id == best_move:
+                return move
+
     def mcts_timer(self, state: State, training: bool, extra_noise_ratio):
         legal_moves = state.legal_moves()
         if len(legal_moves) == 1:
@@ -184,7 +206,7 @@ class MCTS:
 
         return move
     
-    def mcts_n_simulations(self, state: State, training: bool, extra_noise_ratio):
+    def mcts_n_simulations(self, state: State, training: bool, extra_noise_ratio, steps):
         legal_moves = state.legal_moves()
         if len(legal_moves) == 1:
             return next(iter(legal_moves))
@@ -192,7 +214,7 @@ class MCTS:
         current_state = copy.deepcopy(state)
         current_node = MCTS_Node()
 
-        for simulation in range(self.mcts_steps):
+        for simulation in range(steps):
 
             now = time.time()
             # Determination
