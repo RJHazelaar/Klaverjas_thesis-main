@@ -420,6 +420,7 @@ class State:
             array[9] = (self.points[own_team] + self.meld[own_team]) / 100
             array[10] = (self.points[1 - own_team] + self.meld[1 - own_team]) / 100
         self.tijden[3] += time.time() - now
+        print(np.concatenate((card_location.flatten(), array)))
         return np.concatenate((card_location.flatten(), array))
 
     def round_complete(self) -> bool:

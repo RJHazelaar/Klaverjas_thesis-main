@@ -7,6 +7,8 @@ import sys
 from AlphaZero.train_alphazero import train
 from AlphaZero.AlphaZeroPlayer.networks import create_simple_nn, create_normal_nn
 
+parent_dir = os.path.dirname(os.path.realpath(os.path.join(__file__ ,"../")))
+
 
 def run_train(
     run_settings,
@@ -60,8 +62,9 @@ def run_train(
     print("test params:", test_params)
 
     if starting_step == 0:
+        print(f"{parent_dir}/Klaverjas_thesis-main/Data/RL_data/{model_name}/")
         try:
-            os.mkdir(f"Data/RL_data/{model_name}/")
+            os.mkdir(f"{parent_dir}/Klaverjas_thesis-main/Data/RL_data/{model_name}/")
         except:
             print("\n\n\n============model already exists============\n\n\n")
         if model_params["model_type"] == "simple":
@@ -71,7 +74,7 @@ def run_train(
         else:
             raise Exception("model type not recognized")
 
-        model.save(f"Data/Models/{model_name}/{model_name}_0.h5")
+        model.save(f"{parent_dir}/Klaverjas_thesis-main/Data/Models/{model_name}/{model_name}_0.h5")
 
     total_time, selfplay_time, training_time, testing_time = train(
         budget,
@@ -109,7 +112,7 @@ def main():
         "model_name": model_name,
         "starting_step": 0,
         "budget": 3.85,  # hours
-        "multiprocessing": True,
+        "multiprocessing": False,
         "n_cores": n_cores,
     }
     model_params = {
