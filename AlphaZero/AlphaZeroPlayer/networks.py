@@ -104,3 +104,20 @@ def create_normal_nn(learning_rate, l1, l2):
     model.build(input_shape=(1, 299))
 
     return model
+
+
+def create_bidding_nn(learning_rate, l1, l2):
+    model = tf.keras.models.Sequential(
+        [
+            tf.keras.layers.Dense(36, activation="relu", kernel_regularizer=tf.keras.regularizers.l1_l2(l1, l2)),
+            tf.keras.layers.Dense(32, activation="relu", kernel_regularizer=tf.keras.regularizers.l1_l2(l1, l2)),
+            tf.keras.layers.Dense(32, activation="relu"),
+            tf.keras.layers.Dense(16, activation="relu"),
+            tf.keras.layers.Dense(5, activation="softmax"),
+        ]
+    )
+    # define how to train the model
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate), loss="categorical_crossentropy")
+    model.build(input_shape=(1, 36))
+
+    return model

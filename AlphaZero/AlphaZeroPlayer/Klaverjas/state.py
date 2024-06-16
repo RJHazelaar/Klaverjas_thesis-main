@@ -420,7 +420,6 @@ class State:
             array[9] = (self.points[own_team] + self.meld[own_team]) / 100
             array[10] = (self.points[1 - own_team] + self.meld[1 - own_team]) / 100
         self.tijden[3] += time.time() - now
-        print(np.concatenate((card_location.flatten(), array)))
         return np.concatenate((card_location.flatten(), array))
 
     def round_complete(self) -> bool:
@@ -433,3 +432,23 @@ class State:
             print("=======================Game not finished yet=======================")
         local_team = team(player)
         return self.final_score[local_team] - self.final_score[1 - local_team]
+
+    def get_prediction_score(self, player: int, declarer: int, trump_suit):
+        if self.final_score[0] == 0 and self.final_score[1] == 0:
+            print("=======================Game not finished yet=======================")
+        local_team = team(player)
+        prediction_score = np.zeros(5)
+        options = ["k","h","r","s","p"]
+
+        if player == declarer:
+            if self.final_score[local_team] > self.final_score[local_team ^ 1]:
+                prediction_score[options.index(trump_suit)] = 1
+            else:
+                prediction_score[4] = 1 # Should have passed
+            
+        elif local_team == team(declarer): #teammate of declarer
+            prediction_score[4] = 1 # pass was right option?
+        else: #player is team that did not declarer
+            prediction_score[4] = 1 # pass was right option?
+
+        return prediction_score

@@ -27,14 +27,14 @@ def main():
     }
     model = None
 
-    alpha_player_1 = AlphaZero_player_cheating(1, mcts_params, model)
+    alpha_player_1 = AlphaZero_player(1, mcts_params, model)
     #alpha_player_1 = AlphaZero_player(1, mcts_params, model)
     #alpha_player_2 = AlphaZero_player(2, mcts_params, model)
     alpha_player_2 = AlphaZero_player_heavyrollout(2, mcts_params, model)
     alpha_player_3 = AlphaZero_player(3, mcts_params, model)
     random.seed(0)
     while input("New Game? (y/n)") == "y":
-        round = Round(random.choice([0, 1, 2, 3]), "k", random.choice([0, 1, 2, 3]))
+        round = Round(random.choice([0, 1, 2, 3]), "s", random.choice([0, 1, 2, 3]))
 
         alpha_player_1.new_round_Round(round)
         alpha_player_2.new_round_Round(round)

@@ -1,5 +1,6 @@
 from Lennard.tricks import Trick
 from Lennard.deck import Deck, Card
+import numpy as np
 
 def team(player):
     return player % 2
@@ -8,28 +9,75 @@ def other_team(player):
     return (player + 1) % 2
 
 class Round:
-    def __init__(self, starting_player, trump_suit, declarer, **kwargs):
+    def __init__(self, starting_player, trump_suit, declarer, model=None, **kwargs):
         self.starting_player = starting_player
         self.current_player = starting_player
-        self.trump_suit = trump_suit
-        self.declaring_team = team(declarer)
-        self.tricks = [Trick(starting_player)]
-        self.points = [0,0]
-        self.meld = [0, 0]
+        self.declarer = declarer
+        if model is not None:
+            options = ["k","h","r","s","p"]
+            self.trump_suit = "k"
+            declarer = starting_player
+            self.tricks = [Trick(starting_player)]
+            self.points = [0,0]
+            self.meld = [0, 0]
 
-        self.cardsleft = [[i for i in range(7,15)] for j in range(4)]
-        for i in range(4):
-            if ['k', 'h', 'r', 's'][i] == self.trump_suit:
-                order = [8, 9, 14, 12, 15, 10, 11, 13]
-            else:
-                order = [0, 1, 2, 6, 3, 4, 5, 7]
-            ordered_list = [i for _, i in sorted(zip(order, self.cardsleft[i]))]
-            self.cardsleft[i] = ordered_list          
+            self.cardsleft = [[i for i in range(7,15)] for j in range(4)]
+            for i in range(4):
+                if ["k", "h", "r", "s"][i] == self.trump_suit:
+                    order = [8, 9, 14, 12, 15, 10, 11, 13]
+                else:
+                    order = [0, 1, 2, 6, 3, 4, 5, 7]
+                ordered_list = [i for _, i in sorted(zip(order, self.cardsleft[i]))]
+                self.cardsleft[i] = ordered_list
+                
+            self.deal()               
 
-        self.deal()
+            # NEURAL NETWORK
+            # TODO Vectorize to output all players simulteneously
+            bidding_order = list(range(declarer, 4)) + list(range(0, declarer))
+            for bidder in bidding_order:
+                input_vector = self.hand_to_input_vector(bidder, starting_player)
+                output = model(input_vector)
+                possible_trump_suit = options[np.argmax(output)] 
+                if possible_trump_suit != "p":
+                    self.declarer = bidder
+                    self.trump_suit = possible_trump_suit
+                    break
+            
+            if self.trump_suit == "p": # First declarer forced to make a decision != passing
+                output = model(input_vector)[:-1]
+                self.trump_suit = options[np.argmax(output)] #TODO Just use the previous output
+            # NEURAL NETWORK
 
+            self.declaring_team = team(self.declarer)
+
+        else:    
+            self.trump_suit = trump_suit
+            self.declaring_team = team(self.declarer)
+            self.tricks = [Trick(starting_player)]
+            self.points = [0,0]
+            self.meld = [0, 0]
+
+            self.cardsleft = [[i for i in range(7,15)] for j in range(4)]
+            for i in range(4):
+                if ["k", "h", "r", "s"][i] == self.trump_suit:
+                    order = [8, 9, 14, 12, 15, 10, 11, 13]
+                else:
+                    order = [0, 1, 2, 6, 3, 4, 5, 7]
+                ordered_list = [i for _, i in sorted(zip(order, self.cardsleft[i]))]
+                self.cardsleft[i] = ordered_list       
+
+            self.deal()
+    
     def round_in_progress(self, starting_player, trump_suit, declarer, cards_players):
         1 == 1
+
+    def hand_to_input_vector(self, declarer, starting_player):
+        all_cards = [0,1,2,3,4,5,6,7,10,11,12,13,14,15,16,17,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37]
+        input_vector = np.in1d(all_cards, self.player_hands[declarer]).astype(int)
+        position = np.array([i%4 for i in range(starting_player,starting_player+4)])
+        position = np.where(position == declarer, 1, 0)
+        return np.concatenate((input_vector, position))[np.newaxis]
 
     #Gives each player 8 cards to play with
     def deal(self):
