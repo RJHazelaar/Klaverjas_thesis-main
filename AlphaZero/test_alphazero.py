@@ -35,7 +35,7 @@ def test_vs_alphazero_player(
     if num_rounds * (process_id + 1) > 50010:
         raise "too many rounds"
 
-    rounds = pd.read_csv(parent_dir+"/Data/SL_data/originalDB.csv", delimiter=";", low_memory=False, converters={"Cards": pd.eval})
+    rounds = pd.read_csv(parent_dir+"/Data/SL_Data/originalDB.csv", delimiter=";", low_memory=False, converters={"Cards": pd.eval})
 
     model1, model2 = None, None
     if model_paths[0] is not None:
@@ -111,8 +111,8 @@ def test_vs_rule_player(
     if num_rounds * (process_id + 1) > 50010:
         raise "too many rounds"
 
-    rounds = pd.read_csv(parent_dir+"Data/SL_data/originalDB.csv", delimiter=";", low_memory=False, converters={"Cards": pd.eval})
-    print(parent_dir+"Data/SL_data/originalDB.csv")
+    rounds = pd.read_csv(parent_dir+"Data/SL_Data/originalDB.csv", delimiter=";", low_memory=False, converters={"Cards": pd.eval})
+    print(parent_dir+"Data/SL_Data/originalDB.csv")
 
     rule_player = Rule_player()
 

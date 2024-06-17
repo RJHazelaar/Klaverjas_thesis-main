@@ -19,7 +19,7 @@ from AlphaZero.test_alphazero import run_test_multiprocess
 
 def create_train_data(process_num: int, total_processes: int):
 
-    data = pd.read_csv("Data/SL_data/originalDB.csv", low_memory=False, converters={"Cards": pd.eval, "Rounds": eval})
+    data = pd.read_csv("Data/SL_Data/originalDB.csv", low_memory=False, converters={"Cards": pd.eval, "Rounds": eval})
 
     total_rounds = len(data.index)
     data_per_process = total_rounds // total_processes
@@ -134,17 +134,17 @@ def create_train_data(process_num: int, total_processes: int):
 
     train_data = np.concatenate((X_train, y_train), axis=1)
 
-    np.save(f"Data/SL_data/train_data_{process_num}.npy", train_data)
+    np.save(f"Data/SL_Data/train_data_{process_num}.npy", train_data)
     # np.savetxt(f"Data/train_data_{process_num}.csv", train_data, delimiter=",")
 
 
 def merge_npy(files):
     arrays = []
     for num in range(files):
-        array = np.load(f"Data/SL_data/train_data_{num}.npy")
+        array = np.load(f"Data/SL_Data/train_data_{num}.npy")
         arrays.append(array)
     train_data = np.concatenate(arrays, axis=0)
-    np.save(f"Data/SL_data/train_data.npy", train_data)
+    np.save(f"Data/SL_Data/train_data.npy", train_data)
 
 
 def run_create_data():
@@ -162,7 +162,7 @@ def run_create_data():
 def train_nn_on_data(model_name, step):
 
     print("loading data")
-    data = np.load("Data/SL_data/train_data.npy")
+    data = np.load("Data/SL_Data/train_data.npy")
     print("data loaded")
 
     X = data[:, :299]
