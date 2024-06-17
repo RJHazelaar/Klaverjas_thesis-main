@@ -119,6 +119,7 @@ def test_vs_rule_player(
     model = None
     if model_paths[0] is not None:
         try: 
+            print(f"/local/s1762508/Klaverjas_thesis-main/Data/Models/Data/Models/{model_paths[0]}")
             model = tf.keras.models.load_model("/local/s1762508/Klaverjas_thesis-main/Data/Models/Data/Models/" + model_paths[0])
             #model = tf.keras.models.load_model(parent_dir+"Data/Models/" + model_paths[0])
         except:
