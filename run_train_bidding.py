@@ -93,7 +93,7 @@ def run_train(
         except:
             print("\n\n\n============bidding model already exists============\n\n\n")
         if bidding_model_params["model_type"] == "bidding":
-            bidding_model = create_bidding_nn(learning_rate, l1, l2)
+            bidding_model = create_bidding_nn(learning_rate, l1_bidding, l2_bidding)
         else:
             raise Exception("model type not recognized")
 
@@ -151,8 +151,8 @@ def main():
     bidding_model_params = {
         "model_type": "bidding",
         "learning_rate": 0.01,
-        "l1": 0.0,
-        "l2": 0.0,
+        "l1": 0.01,
+        "l2": 0.01,
     }
     selfplay_params = {
         "rounds_per_step": 60,  # amount of selfplay rounds per step
