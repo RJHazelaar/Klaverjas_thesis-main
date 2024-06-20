@@ -352,7 +352,7 @@ class State:
             for i in range(4):
                 self.possible_cards[i] |= self.removed_cards[i]
 
-    def to_nparray(self):
+    def to_nparray_alt(self):
         """
         Convert the game state to a numpy array own position will become index 0
         first 32x9 array: 32 cards, 9 possible locations by one of the 4 players in one of the 4 centre positions or already played
@@ -425,7 +425,7 @@ class State:
         self.tijden[3] += time.time() - now
         return np.concatenate((card_location.flatten(), array))
 
-    def to_nparray_orig(self):
+    def to_nparray(self):
         """
         Convert the game state to a numpy array own position will become index 0
         first 32x9 array: 32 cards, 9 possible locations by one of the 4 players in one of the 4 centre positions or already played
