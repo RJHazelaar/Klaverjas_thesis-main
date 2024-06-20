@@ -51,7 +51,7 @@ class MCTS_Node:
     def normalized_score(self, score):
         return (2 * (score - self.q_min)) / (self.q_max - self.q_min) - 1
 
-    def select_child_ucb(self, c: int, simulation, model) -> MCTS_Node:
+    def select_child_ucb(self, c: int, simulation, state, model) -> MCTS_Node:
         ucbs = []
         legal_children = [child for child in self.children if child.move in self.legal_moves]
         if len(legal_children) == 1:
@@ -200,7 +200,7 @@ class MCTS:
             while (
                 not current_state.round_complete() and current_node.legal_moves - current_node.children_moves == set()
             ):
-                current_node = current_node.select_child_ucb(self.ucb_c, simulation, self.model)
+                current_node = current_node.select_child_ucb(self.ucb_c, simulation, current_state, self.model)
                 current_state.do_move(current_node.move, "mcts_move")
                 current_node.set_legal_moves(current_state)
             self.tijden[1] += time.time() - now

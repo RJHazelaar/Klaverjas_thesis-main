@@ -39,8 +39,8 @@ def create_normal_two_headed_nn(learning_rate):
 
     base_layers = tf.keras.models.Sequential(
         [
-            tf.keras.layers.Dense(512, activation="relu"),
             tf.keras.layers.Dense(1024, activation="relu"),
+            tf.keras.layers.Dense(512, activation="relu"),
         ],
         name="base_layers",
     )(input)

@@ -15,14 +15,15 @@ from AlphaZero.test_alphazero import run_test_multiprocess
 from Lennard.rounds import Round
 
 parent_dir = os.path.dirname(os.path.realpath(os.path.join(__file__ ,"../")))
-
+data_dir = "/local/s1762508/Klaverjas_thesis-main"
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Disable GPU
 
 
 def selfplay(mcts_params, model_path, num_rounds, extra_noise_ratio):
     if model_path is not None:
-        model = tf.keras.models.load_model(f"{parent_dir}/Data/Models/{model_path}")
+        model = tf.keras.models.load_model(f"{data_dir}/Data/Models/{model_path}")
+        #model = tf.keras.models.load_model(f"{parent_dir}/Data/Models/{model_path}")
     else:
         model = None
 
@@ -137,7 +138,8 @@ def train(
     if step == 0:
         memory = None
     else:
-        memory = np.load(f"{parent_dir}/Data/RL_data/{model_name}/{model_name}_{step}_memory.npy")
+        memory = np.load(f"{data_dir}/Data/RL_data/{model_name}/{model_name}_{step}_memory.npy")
+        #memory = np.load(f"{parent_dir}/Data/RL_data/{model_name}/{model_name}_{step}_memory.npy")
 
     early_stopping = tf.keras.callbacks.EarlyStopping(monitor="val_loss", verbose=0, restore_best_weights=True)
     wandb.log({"Average Score": -35, "Train Time": 0})
@@ -159,7 +161,8 @@ def train(
             data = selfplay(mcts_params, model_path, rounds_per_step, extra_noise_ratio)
         selfplay_time = time.time() - tijd
 
-        np.save(f"{parent_dir}/Data/RL_data/{model_name}/{model_name}_{step}.npy", data)
+        np.save(f"{data_dir}/Data/RL_data/{model_name}/{model_name}_{step}.npy", data)
+        #np.save(f"{parent_dir}/Data/RL_data/{model_name}/{model_name}_{step}.npy", data)
 
         # add data to memory and remove old data if memory is full
         if memory is None:
@@ -175,7 +178,8 @@ def train(
         ]
 
         # load train and save model
-        model = tf.keras.models.load_model(f"{parent_dir}/Data/Models/{model_path}")
+        model = tf.keras.models.load_model(f"{data_dir}/Data/Models/{model_path}")
+        #model = tf.keras.models.load_model(f"{parent_dir}/Data/Models/{model_path}")
         tijd = time.time()
         train_nn(train_data, model, fit_params, [early_stopping])
         training_time = time.time() - tijd
@@ -185,7 +189,8 @@ def train(
                 model.optimizer.learning_rate,
                 tf.keras.backend.get_value(model.optimizer.learning_rate) / 10,
             )
-        model.save(f"{parent_dir}/Data/Models/{model_path}")
+        model.save(f"{data_dir}/Data/Models/{model_path}")
+        #model.save(f"{parent_dir}/Data/Models/{model_path}")
 
         total_selfplay_time += selfplay_time
         total_training_time += training_time
@@ -214,5 +219,6 @@ def train(
                 "Train Time": total_selfplay_time + total_training_time,
             }
         )
-    np.save(f"{parent_dir}/Data/RL_data/{model_name}/{model_name}_{step}_memory.npy", memory)
+    np.save(f"{data_dir}/Data/RL_data/{model_name}/{model_name}_{step}_memory.npy", memory)
+    #np.save(f"{parent_dir}/Data/RL_data/{model_name}/{model_name}_{step}_memory.npy", memory)
     return time.time() - start_time, total_selfplay_time, total_training_time, total_testing_time

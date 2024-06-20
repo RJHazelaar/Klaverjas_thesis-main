@@ -93,7 +93,7 @@ def run_train(
         except:
             print("\n\n\n============bidding model already exists============\n\n\n")
         if bidding_model_params["model_type"] == "bidding":
-            bidding_model = create_bidding_nn(learning_rate, l1_bidding, l2_bidding)
+            bidding_model = create_bidding_nn(learning_rate_bidding, l1_bidding, l2_bidding)
         else:
             raise Exception("model type not recognized")
 
