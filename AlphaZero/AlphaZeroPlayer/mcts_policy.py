@@ -51,9 +51,14 @@ class MCTS_Node:
     def normalized_score(self, score):
         return (2 * (score - self.q_min)) / (self.q_max - self.q_min) - 1
 
-    def select_child_ucb(self, c: int, simulation) -> MCTS_Node:
+    def select_child_ucb(self, c: int, simulation, model) -> MCTS_Node:
         ucbs = []
         legal_children = [child for child in self.children if child.move in self.legal_moves]
+        if len(legal_children) == 1:
+            return legal_children[0]
+        # model returns a distribution over 32 features, the cards
+        prob_distr = model()
+
         for child in legal_children:
             if child.visits == 0:
                 return child
@@ -111,7 +116,7 @@ class MCTS:
             while (
                 not current_state.round_complete() and current_node.legal_moves - current_node.children_moves == set()
             ):
-                current_node = current_node.select_child_ucb(self.ucb_c, simulation)
+                current_node = current_node.select_child_ucb(self.ucb_c, simulation, self.model)
                 current_state.do_move(current_node.move, "mcts_move")
                 current_node.set_legal_moves(current_state)
             self.tijden[1] += time.time() - now
@@ -127,27 +132,6 @@ class MCTS:
             # Simulation
             if not current_state.round_complete():
                 sim_score = 0
-                for _ in range(self.n_of_sims):
-                    children = []
-
-                    # Do random moves until round is complete
-                    while not current_state.round_complete():
-
-                        move = random.choice(list(current_state.legal_moves()))
-                        children.append(move)
-                        current_state.do_move(move, "simulation")
-
-                    # Add score to points
-                    sim_score += current_state.get_score(self.player_position)
-
-                    # Undo moves
-                    children.reverse()
-                    for move in children:
-                        current_state.undo_move(move, False)
-
-                # Average the score
-                if self.n_of_sims > 0:
-                    sim_score /= self.n_of_sims
 
                 if self.model is not None:
                     now2 = time.time()
@@ -160,7 +144,7 @@ class MCTS:
                     nn_score = int(self.model(arr))
                     self.tijden2[2] += time.time() - now2
                 else:
-                    nn_score = 0
+                    raise Exception("No Model available")
             else:
                 sim_score = current_state.get_score(self.player_position)
                 nn_score = sim_score
@@ -216,7 +200,7 @@ class MCTS:
             while (
                 not current_state.round_complete() and current_node.legal_moves - current_node.children_moves == set()
             ):
-                current_node = current_node.select_child_ucb(self.ucb_c, simulation)
+                current_node = current_node.select_child_ucb(self.ucb_c, simulation, self.model)
                 current_state.do_move(current_node.move, "mcts_move")
                 current_node.set_legal_moves(current_state)
             self.tijden[1] += time.time() - now
@@ -232,27 +216,6 @@ class MCTS:
             # Simulation
             if not current_state.round_complete():
                 sim_score = 0
-                for _ in range(self.n_of_sims):
-                    children = []
-
-                    # Do random moves until round is complete
-                    while not current_state.round_complete():
-
-                        move = random.choice(list(current_state.legal_moves()))
-                        children.append(move)
-                        current_state.do_move(move, "simulation")
-
-                    # Add score to points
-                    sim_score += current_state.get_score(self.player_position)
-
-                    # Undo moves
-                    children.reverse()
-                    for move in children:
-                        current_state.undo_move(move, False)
-
-                # Average the score
-                if self.n_of_sims > 0:
-                    sim_score /= self.n_of_sims
 
                 if self.model is not None:
                     now2 = time.time()
@@ -265,7 +228,7 @@ class MCTS:
                     nn_score = int(self.model(arr))
                     self.tijden2[2] += time.time() - now2
                 else:
-                    nn_score = 0
+                    raise Exception("No Model available")
             else:
                 sim_score = current_state.get_score(self.player_position)
                 nn_score = sim_score
@@ -275,7 +238,7 @@ class MCTS:
             # Backpropagation
             while current_node.parent is not None:
                 current_node.visits += 1
-                score = (1 - self.nn_scaler) * sim_score + self.nn_scaler * nn_score
+                score = nn_score
                 current_node.update_min_max_score(score)
                 current_node.score += score
                 current_state.undo_move(current_node.move, True)

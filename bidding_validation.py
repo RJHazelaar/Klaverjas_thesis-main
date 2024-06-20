@@ -24,7 +24,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Disable GPU
 parent_dir = os.path.dirname(os.path.realpath(os.path.join(__file__ ,"../")))
 sys.path.append(parent_dir)
 data_dir = parent_dir+"/Klaverjas_thesis-main/Data/SL_Data/originalDB.csv"
-model_path = parent_dir+"/Klaverjas_thesis-main/bidding_network_341.h5"
+model_path = parent_dir+"/Klaverjas_thesis-main/bidding_network_509.h5"
 
 def validation_test(num_rounds: int, model_paths):
     # random.seed(13)
@@ -89,13 +89,8 @@ def validation_test(num_rounds: int, model_paths):
         #print(f"Ground truth from data, trump: {trump_from_data}, declarer{declarer_from_data}")
         #print(f"Predictions from network, trump: {predicted_trump}, declarer{predicted_declarer}")
         if trump_from_data == predicted_trump and declarer_from_data == predicted_declarer:
-            right_predictions += 0 
+            right_predictions += 1 
 
-
-        trump_options = ["k","h","r","s"]
-        declarer_options = [0,1,2,3]
-        if trump_from_data == random.choice(trump_options) and declarer_from_data == random.choice(declarer_options):
-            right_predictions += 1
 
     return right_predictions / total_rounds
 
