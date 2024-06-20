@@ -36,7 +36,7 @@ def selfplay(mcts_params, model_path, bidding_model_path, num_rounds, extra_nois
         bidding_model = None
 
     # 32 turns + 4 end states, 1 for each player
-    X_train = np.zeros((num_rounds * 36, 311), dtype=np.float16)
+    X_train = np.zeros((num_rounds * 36, 331), dtype=np.float16)
     y_train = np.zeros((num_rounds * 36, 1), dtype=np.float16)
 
     # 4 player that can bid, 32 cards + 4 one hot encoded player
@@ -123,7 +123,7 @@ def train_nn(train_data, model: tf.keras.Sequential, fit_params, callbacks):
     batch_size = fit_params["batch_size"]
 
     X_train, X_test, y_train, y_test = train_test_split(
-        train_data[:, :311], train_data[:, 311], train_size=0.8, shuffle=True
+        train_data[:, :331], train_data[:, 331], train_size=0.8, shuffle=True
     )
 
     model.fit(
