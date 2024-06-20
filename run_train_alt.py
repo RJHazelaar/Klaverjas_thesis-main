@@ -5,7 +5,7 @@ import time
 import sys
 
 from AlphaZero.train_alphazero_alt import train
-from AlphaZero.AlphaZeroPlayer.networks import create_simple_nn, create_normal_nn, create_bidding_nn
+from AlphaZero.AlphaZeroPlayer.networks import create_simple_nn, create_normal_nn, create_bidding_nn, create_alt_nn
 
 parent_dir = os.path.dirname(os.path.realpath(os.path.join(__file__ ,"../")))
 data_dir = "/local/s1762508"
@@ -80,6 +80,8 @@ def run_train(
             model = create_simple_nn(learning_rate, l1, l2)
         elif model_params["model_type"] == "normal":
             model = create_normal_nn(learning_rate, l1, l2)
+        elif model_params["model_type"] == "normal_alt":
+            model = create_alt_nn(learning_rate, l1, l2)
         else:
             raise Exception("model type not recognized")
 
