@@ -107,13 +107,15 @@ def selfplay(mcts_params, model_path, bidding_model_path, num_rounds, extra_nois
             y_train[round_num * 36 + trick * 4 + 2] = score_player_2
             y_train[round_num * 36 + trick * 4 + 3] = score_player_3
 
+        for bidder, player in zip(round.bidders, [0,1,2,3]):
+            X_train_bid[round_num * 4 + player] = X_train_bid[round_num * 4 + player] * bidder
+            y_train_bid[round_num * 4 + player] = alpha_player_0.state.get_prediction_score(0, round.declarer, round.trump_suit) * bidder
 
-        y_train_bid[round_num * 4 ] = alpha_player_0.state.get_prediction_score(0, round.declarer, round.trump_suit)
-        y_train_bid[round_num * 4 + 1] = alpha_player_1.state.get_prediction_score(1, round.declarer, round.trump_suit)
-        y_train_bid[round_num * 4 + 2] = alpha_player_2.state.get_prediction_score(2, round.declarer, round.trump_suit) 
-        y_train_bid[round_num * 4 + 3] = alpha_player_3.state.get_prediction_score(3, round.declarer, round.trump_suit)
 
     train_data = np.concatenate((X_train, y_train), axis=1)
+
+    # First remove training data for players that didnt bid
+    X_train_bid = X_train_bid[~np.all(X_train_bid == 0, axis=1)]
     train_data_bidding = np.concatenate((X_train_bid, y_train_bid), axis=1)
     return train_data, train_data_bidding
 

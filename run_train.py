@@ -112,7 +112,7 @@ def main():
         "model_name": model_name,
         "starting_step": 0,
         "budget": 3.85,  # hours
-        "multiprocessing": False,
+        "multiprocessing": True,
         "n_cores": n_cores,
     }
     model_params = {
