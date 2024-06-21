@@ -127,7 +127,7 @@ def main():
         n_cores = int(os.environ["SLURM_JOB_CPUS_PER_NODE"])
         cluster = "cluster"
     except:
-        n_cores = 10
+        n_cores = 32
         cluster = "local"
     print(f"Using {n_cores} cores on {cluster}")
 
