@@ -32,7 +32,7 @@ def run_test():
     mcts_params = {
         "mcts_steps": 10,
         "n_of_sims": 1,
-        "nn_scaler": 0,
+        "nn_scaler": 1,
         "ucb_c": 200,
     }
 
