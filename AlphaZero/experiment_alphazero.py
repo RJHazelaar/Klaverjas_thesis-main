@@ -220,7 +220,7 @@ def test_vs_rule_player(
     model = None
     if model_paths[0] is not None:
         try:
-            model = tf.keras.models.load_model("Data/Models/" + model_paths[0])
+            model = tf.keras.models.load_model(model_paths[0])
         except:
             print("model not found")
             raise Exception("model not found")
