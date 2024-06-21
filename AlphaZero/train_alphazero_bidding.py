@@ -260,9 +260,14 @@ def train(
         # Same but for bidding network
 
         # select train data and train model
-        bidding_train_data = bidding_memory[
-            np.random.choice(len(bidding_memory), rounds_per_step * 4 * training_size_multiplier, replace=False), :
-        ]
+        if (rounds_per_step * 4 * training_size_multiplier < len(bidding_memory)):
+            bidding_train_data = bidding_memory[
+                np.random.choice(len(bidding_memory), rounds_per_step * 4 * training_size_multiplier, replace=False), :
+            ]
+        else:
+            bidding_train_data = bidding_memory[
+                np.random.choice(len(bidding_memory), len(bidding_memory), replace=False), :
+            ]
         # load train and save bidding model
         bidding_model = tf.keras.models.load_model(f"{data_dir}/Data/Models/{bidding_model_path}")
         #bidding_model = tf.keras.models.load_model(f"{parent_dir}/Data/Models/{bidding_model_path}")
