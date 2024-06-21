@@ -13,6 +13,8 @@ class Round:
         self.starting_player = starting_player
         self.current_player = starting_player
         self.declarer = declarer
+        self.bidders = [0,0,0,0] # Player that did a bid
+        self.passes = 0
         if model is not None:
             options = ["k","h","r","s","p"]
             self.trump_suit = "k"
@@ -38,11 +40,14 @@ class Round:
             for bidder in bidding_order:
                 input_vector = self.hand_to_input_vector(bidder, starting_player)
                 output = model(input_vector)
+                self.bidders[bidder] = 1
                 possible_trump_suit = options[np.argmax(output)] 
                 if possible_trump_suit != "p":
                     self.declarer = bidder
                     self.trump_suit = possible_trump_suit
                     break
+                else:
+                    self.passes += 1
             
             if self.trump_suit == "p": # First declarer forced to make a decision != passing
                 output = model(input_vector)[:-1]
