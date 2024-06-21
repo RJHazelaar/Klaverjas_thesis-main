@@ -116,6 +116,7 @@ def selfplay(mcts_params, model_path, bidding_model_path, num_rounds, extra_nois
 
     # First remove training data for players that didnt bid
     X_train_bid = X_train_bid[~np.all(X_train_bid == 0, axis=1)]
+    y_train_bid = y_train_bid[~np.all(y_train_bid == 0, axis=1)]
     train_data_bidding = np.concatenate((X_train_bid, y_train_bid), axis=1)
     return train_data, train_data_bidding
 
