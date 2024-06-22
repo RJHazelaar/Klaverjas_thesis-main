@@ -144,13 +144,13 @@ def main():
     }
     model_params = {
         "model_type": "normal",
-        "learning_rate": 0.01,
+        "learning_rate": 0.005,
         "l1": 0.0,
         "l2": 0.0,
     }
     bidding_model_params = {
         "model_type": "bidding",
-        "learning_rate": 0.01,
+        "learning_rate": 0.005,
         "l1": 0.01,
         "l2": 0.01,
     }

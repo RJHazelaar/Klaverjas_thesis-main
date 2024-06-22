@@ -46,6 +46,16 @@ def create_normal_two_headed_nn(learning_rate):
         ],
         name="base_layers",
     )(input)
+    
+
+    policy_head = tf.keras.models.Sequential(
+        [
+            tf.keras.layers.Dense(512, activation="relu"),
+            tf.keras.layers.Dense(256, activation="relu"),
+            tf.keras.layers.Dense(32, activation="softmax"),
+        ],
+        name="policy_head",
+    )(base_layers)
 
     value_head = tf.keras.models.Sequential(
         [
@@ -56,14 +66,6 @@ def create_normal_two_headed_nn(learning_rate):
         name="value_head",
     )(base_layers)
 
-    policy_head = tf.keras.models.Sequential(
-        [
-            tf.keras.layers.Dense(512, activation="relu"),
-            tf.keras.layers.Dense(256, activation="relu"),
-            tf.keras.layers.Dense(32, activation="softmax"),
-        ],
-        name="policy_head",
-    )(base_layers)
 
     # Create the two-headed model
     model = tf.keras.models.Model(inputs=input, outputs=[value_head, policy_head])
@@ -126,11 +128,8 @@ def create_alt_nn(learning_rate, l1, l2):
 def create_bidding_nn(learning_rate, l1, l2):
     model = tf.keras.models.Sequential(
         [
-            tf.keras.layers.Dense(64, activation="relu", kernel_regularizer=tf.keras.regularizers.l1_l2(l1, l2)),
-            tf.keras.layers.Dense(64, activation="relu", kernel_regularizer=tf.keras.regularizers.l1_l2(l1, l2)),
-            tf.keras.layers.Dense(32, activation="relu"),
-            tf.keras.layers.Dense(32, activation="relu"),
-            tf.keras.layers.Dense(16, activation="relu"),
+            tf.keras.layers.Dense(512, activation="relu", kernel_regularizer=tf.keras.regularizers.l1_l2(l1, l2)),
+            tf.keras.layers.Dense(512, activation="relu", kernel_regularizer=tf.keras.regularizers.l1_l2(l1, l2)),
             tf.keras.layers.Dense(5, activation="softmax"),
         ]
     )

@@ -221,8 +221,7 @@ class MCTS:
             if not current_state.round_complete():
                 sim_score = 0
                 for _ in range(self.n_of_sims):
-                    if self.model is not None:
-                        break
+
                     children = []
 
                     # Do random moves until round is complete
