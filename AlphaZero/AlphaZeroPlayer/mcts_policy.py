@@ -233,7 +233,7 @@ class MCTS:
             while (
                 not current_state.round_complete() and leaf_selected == False
             ):
-                new_node = current_node.select_child_puct(self.ucb_c, simulation, self.model)
+                new_node = current_node.select_child_puct(self.ucb_c, simulation, current_state, self.model)
                 if new_node not in current_node.children:
                     #Go to expand
                     current_node = current_node
