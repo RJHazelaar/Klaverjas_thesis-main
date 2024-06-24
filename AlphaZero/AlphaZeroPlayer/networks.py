@@ -34,7 +34,7 @@ def create_small_two_headed_nn(learning_rate):
     return model
 
 
-def create_normal_two_headed_nn(learning_rate):
+def create_normal_two_headed_nn(learning_rate, l1, l2):
     input = tf.keras.layers.Input(shape=(299,))
 
     base_layers = tf.keras.models.Sequential(
@@ -47,16 +47,6 @@ def create_normal_two_headed_nn(learning_rate):
         name="base_layers",
     )(input)
     
-
-    policy_head = tf.keras.models.Sequential(
-        [
-            tf.keras.layers.Dense(512, activation="relu"),
-            tf.keras.layers.Dense(256, activation="relu"),
-            tf.keras.layers.Dense(32, activation="softmax"),
-        ],
-        name="policy_head",
-    )(base_layers)
-
     value_head = tf.keras.models.Sequential(
         [
             tf.keras.layers.Dense(512, activation="relu"),
@@ -66,6 +56,14 @@ def create_normal_two_headed_nn(learning_rate):
         name="value_head",
     )(base_layers)
 
+    policy_head = tf.keras.models.Sequential(
+        [
+            tf.keras.layers.Dense(512, activation="relu"),
+            tf.keras.layers.Dense(256, activation="relu"),
+            tf.keras.layers.Dense(32, activation="softmax"),
+        ],
+        name="policy_head",
+    )(base_layers)
 
     # Create the two-headed model
     model = tf.keras.models.Model(inputs=input, outputs=[value_head, policy_head])

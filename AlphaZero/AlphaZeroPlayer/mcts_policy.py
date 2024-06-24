@@ -4,13 +4,14 @@ import copy
 import random
 import numpy as np
 import time
+from scipy.special import softmax
 
 from AlphaZero.AlphaZeroPlayer.Klaverjas.card import Card
 from AlphaZero.AlphaZeroPlayer.Klaverjas.state import State
 
 
 class MCTS_Node:
-    def __init__(self, own_team: bool = True, parent: MCTS_Node = None, move: Card = None):
+    def __init__(self, own_team: bool = True, parent: MCTS_Node = None, move: Card = None, root: bool = False):
         self.children = set()
         self.children_moves = set()
         self.parent = parent
@@ -35,8 +36,8 @@ class MCTS_Node:
     def set_legal_moves(self, state: State):
         self.legal_moves = state.legal_moves()
 
-    def expand(self):
-        move = random.choice(list(self.legal_moves - self.children_moves))
+    def expand(self, new_node):
+        move = new_node
         new_node = MCTS_Node(not self.own_team, self, move)
         self.children.add(new_node)
         self.children_moves.add(move)
@@ -51,21 +52,36 @@ class MCTS_Node:
     def normalized_score(self, score):
         return (2 * (score - self.q_min)) / (self.q_max - self.q_min) - 1
 
-    def select_child_ucb(self, c: int, simulation, state, model) -> MCTS_Node:
+    def select_child_puct(self, c: int, simulation, state, model) -> MCTS_Node:
         ucbs = []
-        legal_children = [child for child in self.children if child.move in self.legal_moves]
+        legal_children = list(self.legal_moves)
         if len(legal_children) == 1:
             return legal_children[0]
+        
         # model returns a distribution over 32 features, the cards
-        prob_distr = model()
+        prob_distr = model(state.to_nparray())["policy_head"] #32 size array
+        moves = [a.move for a in legal_children]
+        all_cards = [0,1,2,3,4,5,6,7,10,11,12,13,14,15,16,17,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37]
+        all_cards_legal = np.in1d(all_cards, moves).astype(int)
+        prob_distr_legal = np.multiply(all_cards_legal, prob_distr)
+        no_zeroes = [i for i in prob_distr_legal if i != 0]
+        probabilities_legal = no_zeroes / np.linalg.norm(no_zeroes)
+        if self.root:
+            probabilities_legal = probabilities_legal #TODO TODO TODO TODO TODO
+        child_prob = dict(zip(moves, probabilities_legal))
+        # child_prob[move]
 
         for child in legal_children:
-            if child.visits == 0:
-                return child
-            if self.own_team:
-                ucbs.append(self.normalized_score(child.score / child.visits) + c * np.sqrt(np.log(simulation) / child.visits))
+            if child not in self.children: #Node not added to tree
+                if self.own_team:
+                    ucbs.append(c * (child_prob[child.move]) * (np.sqrt(self.visits) / (1 + child.visits)))
+                else: #TODO UHM MINUS??
+                    ucbs.append(c * (child_prob[child.move]) * (np.sqrt(self.visits) / (1 + child.visits)))
             else:
-                ucbs.append(-self.normalized_score(child.score / child.visits) + c * np.sqrt(np.log(simulation) / child.visits))
+                if self.own_team:
+                    ucbs.append(self.normalized_score(child.score / child.visits) + c * (child_prob[child.move]) * (np.sqrt(self.visits) / (1 + child.visits)))
+                else:
+                    ucbs.append(-self.normalized_score(child.score / child.visits) + c * (child_prob[child.move]) * (np.sqrt(self.visits) / (1 + child.visits)))
         index_max = np.argmax(np.array([ucbs]))
         return legal_children[index_max]
 
@@ -88,10 +104,10 @@ class MCTS:
 
     def __call__(self, state: State, training: bool, extra_noise_ratio):
         if self.time_limit != None:
-            move = self.mcts_timer(state, training, extra_noise_ratio)
+            move, policy = self.mcts_timer(state, training, extra_noise_ratio)
         else:
-            move = self.mcts_n_simulations(state, training, extra_noise_ratio)
-        return move
+            move, policy = self.mcts_n_simulations(state, training, extra_noise_ratio)
+        return move, policy
     
     def mcts_timer(self, state: State, training: bool, extra_noise_ratio):
         legal_moves = state.legal_moves()
@@ -99,7 +115,7 @@ class MCTS:
             return next(iter(legal_moves))
 
         current_state = copy.deepcopy(state)
-        current_node = MCTS_Node()
+        current_node = MCTS_Node(root=True)
         # time limit is in ms, time_ns in ns
         ending_time = time.time_ns() + self.time_limit * 1000000
         simulation = -1
@@ -112,18 +128,24 @@ class MCTS:
             self.tijden[0] += time.time() - now
             now = time.time()
             # Selection
+            new_node = None
             current_node.set_legal_moves(current_state)
             while (
                 not current_state.round_complete() and current_node.legal_moves - current_node.children_moves == set()
             ):
-                current_node = current_node.select_child_ucb(self.ucb_c, simulation, self.model)
-                current_state.do_move(current_node.move, "mcts_move")
-                current_node.set_legal_moves(current_state)
+                new_node = current_node.select_child_puct(self.ucb_c, simulation, self.model)
+                if new_node not in current_node.children:
+                    #Go to expand
+                    current_node = current_node
+                else:
+                    current_node = new_node
+                    current_state.do_move(current_node.move, "mcts_move")
+                    current_node.set_legal_moves(current_state)
             self.tijden[1] += time.time() - now
             now = time.time()
             # Expansion
             if not current_state.round_complete():
-                new_node = current_node.expand()
+                new_node = current_node.expand(new_node)
                 current_node = new_node
                 current_state.do_move(current_node.move, "mcts_move")
 
@@ -141,7 +163,7 @@ class MCTS:
                     arr = np.array([stat])
                     self.tijden2[1] += time.time() - now2
                     now2 = time.time()
-                    nn_score = int(self.model(arr))
+                    nn_score = int(self.model(arr)["value_head"])
                     self.tijden2[2] += time.time() - now2
                 else:
                     raise Exception("No Model available")
@@ -165,9 +187,11 @@ class MCTS:
 
         visits = []
         children = []
+        moves = []
         for child in current_node.children:
             visits.append(child.visits)
             children.append(child)
+            moves.append(child.move)
 
         child = children[np.argmax(visits)]
 
@@ -178,7 +202,14 @@ class MCTS:
         else:
             move = child.move
 
-        return move
+        # need list of size 32 for (target) policy
+        all_cards = [0,1,2,3,4,5,6,7,10,11,12,13,14,15,16,17,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37]
+        total_visit_count = sum(visits)
+        normalized_visits = [x / total_visit_count for x in visits]
+        dic = dict(zip(moves, normalized_visits))
+        policy = [0 if x not in dic else dic[x] for x in all_cards]
+
+        return move, policy
     
     def mcts_n_simulations(self, state: State, training: bool, extra_noise_ratio):
         legal_moves = state.legal_moves()
@@ -186,7 +217,7 @@ class MCTS:
             return next(iter(legal_moves))
 
         current_state = copy.deepcopy(state)
-        current_node = MCTS_Node()
+        current_node = MCTS_Node(root=True)
 
         for simulation in range(self.mcts_steps):
 
@@ -196,18 +227,24 @@ class MCTS:
             self.tijden[0] += time.time() - now
             now = time.time()
             # Selection
+            new_node = None
             current_node.set_legal_moves(current_state)
             while (
                 not current_state.round_complete() and current_node.legal_moves - current_node.children_moves == set()
             ):
-                current_node = current_node.select_child_ucb(self.ucb_c, simulation, current_state, self.model)
-                current_state.do_move(current_node.move, "mcts_move")
-                current_node.set_legal_moves(current_state)
+                new_node = current_node.select_child_puct(self.ucb_c, simulation, self.model)
+                if new_node not in current_node.children:
+                    #Go to expand
+                    current_node = current_node
+                else:
+                    current_node = new_node
+                    current_state.do_move(current_node.move, "mcts_move")
+                    current_node.set_legal_moves(current_state)
             self.tijden[1] += time.time() - now
             now = time.time()
             # Expansion
             if not current_state.round_complete():
-                new_node = current_node.expand()
+                new_node = current_node.expand(new_node)
                 current_node = new_node
                 current_state.do_move(current_node.move, "mcts_move")
 
@@ -225,7 +262,7 @@ class MCTS:
                     arr = np.array([stat])
                     self.tijden2[1] += time.time() - now2
                     now2 = time.time()
-                    nn_score = int(self.model(arr))
+                    nn_score = int(self.model(arr)["value_head"])
                     self.tijden2[2] += time.time() - now2
                 else:
                     raise Exception("No Model available")
@@ -251,9 +288,11 @@ class MCTS:
 
         visits = []
         children = []
+        moves = []
         for child in current_node.children:
             visits.append(child.visits)
             children.append(child)
+            moves.append(child.move)
 
         child = children[np.argmax(visits)]
 
@@ -264,4 +303,11 @@ class MCTS:
         else:
             move = child.move
 
-        return move
+        # need list of size 32 for (target) policy
+        all_cards = [0,1,2,3,4,5,6,7,10,11,12,13,14,15,16,17,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37]
+        total_visit_count = sum(visits)
+        normalized_visits = [x / total_visit_count for x in visits]
+        dic = dict(zip(moves, normalized_visits))
+        policy = [0 if x not in dic else dic[x] for x in all_cards]
+
+        return move, policy

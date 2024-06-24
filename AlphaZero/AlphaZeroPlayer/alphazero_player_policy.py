@@ -3,10 +3,10 @@ from __future__ import annotations  # To use the class name in the type hinting
 from Lennard.rounds import Round
 from AlphaZero.AlphaZeroPlayer.Klaverjas.card import Card
 from AlphaZero.AlphaZeroPlayer.Klaverjas.state import State
-from AlphaZero.AlphaZeroPlayer.mcts_normalized import MCTS
+from AlphaZero.AlphaZeroPlayer.mcts_policy import MCTS
 
 
-class AlphaZero_player_normalized:
+class AlphaZero_player_policy:
     def __init__(self, player_position: int, mcts_params: dict, model, **kwargs):
         self.player_position = player_position
         self.model = model
