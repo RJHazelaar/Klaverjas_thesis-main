@@ -12,7 +12,7 @@ from sklearn.model_selection import train_test_split
 from multiprocessing import get_context
 
 from AlphaZero.AlphaZeroPlayer.alphazero_player_policy import AlphaZero_player_policy
-from AlphaZero.test_alphazero import run_test_multiprocess
+from AlphaZero.test_alphazero_policy import run_test_multiprocess
 from Lennard.rounds import Round
 
 parent_dir = os.path.dirname(os.path.realpath(os.path.join(__file__ ,"../")))
