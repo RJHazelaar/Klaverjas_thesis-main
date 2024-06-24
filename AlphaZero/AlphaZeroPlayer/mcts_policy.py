@@ -229,13 +229,15 @@ class MCTS:
             # Selection
             new_node = None
             current_node.set_legal_moves(current_state)
+            leaf_selected = False
             while (
-                not current_state.round_complete() and current_node.legal_moves - current_node.children_moves == set()
+                not current_state.round_complete() and leaf_selected == False
             ):
                 new_node = current_node.select_child_puct(self.ucb_c, simulation, self.model)
                 if new_node not in current_node.children:
                     #Go to expand
                     current_node = current_node
+                    leaf_selected = True
                 else:
                     current_node = new_node
                     current_state.do_move(current_node.move, "mcts_move")
