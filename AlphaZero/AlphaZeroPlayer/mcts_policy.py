@@ -21,6 +21,7 @@ class MCTS_Node:
         self.own_team = own_team
         self.q_min = -162
         self.q_max = 162
+        self.root = root
 
     def __repr__(self) -> str:
         return f"Node({self.move}, {self.parent.move}, {self.score}, {self.visits})"
@@ -72,7 +73,7 @@ class MCTS_Node:
         no_zeroes = [i for i in prob_distr_legal if i != 0]
         probabilities_legal = no_zeroes / np.linalg.norm(no_zeroes)
         if self.root:
-            probabilities_legal = probabilities_legal #TODO TODO TODO TODO TODO
+            probabilities_legal = probabilities_legal #TODO TODO TODO TODO TODO DIRICHLET
         child_prob = dict(zip(moves, probabilities_legal))
         # child_prob[move]
 
