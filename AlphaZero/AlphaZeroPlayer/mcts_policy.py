@@ -60,7 +60,9 @@ class MCTS_Node:
         
         # model returns a distribution over 32 features, the cards
         stat = state.to_nparray()
-        prob_distr = model(np.array([stat]))["policy_head"] #32 size array
+        value, prob_distr = model(np.array([stat]))["policy_head"] #32 size array
+        print(value)
+        print(prob_distr)
         moves = [a.move for a in legal_children]
         all_cards = [0,1,2,3,4,5,6,7,10,11,12,13,14,15,16,17,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37]
         all_cards_legal = np.in1d(all_cards, moves).astype(int)
