@@ -127,7 +127,7 @@ def main():
         n_cores = int(os.environ["SLURM_JOB_CPUS_PER_NODE"])
         cluster = "cluster"
     except:
-        n_cores = 20
+        n_cores = 1
         cluster = "local"
     print(f"Using {n_cores} cores on {cluster}")
 
@@ -139,7 +139,7 @@ def main():
         "bidding_model_name": bidding_model_name,
         "starting_step": 0,
         "budget": 8,  # hours
-        "multiprocessing": True,
+        "multiprocessing": False,
         "n_cores": n_cores,
     }
     model_params = {
