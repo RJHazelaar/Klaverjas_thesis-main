@@ -85,7 +85,7 @@ class MCTS_Node:
 
         for move in moves:
             if move not in children_moves: #Node not added to tree
-                return_nodes.append(None)
+                return_nodes.append(self)
                 if self.own_team:
                     ucbs.append(c * (child_prob[move]))
                 else: #TODO gaat nog steeds fout als de trick hierna is afgelopen
