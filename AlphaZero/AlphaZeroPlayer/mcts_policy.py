@@ -122,7 +122,7 @@ class MCTS:
             move, policy = self.mcts_timer(state, training, extra_noise_ratio)
         else:
             move, policy = self.mcts_n_simulations(state, training, extra_noise_ratio)
-        return (move, policy)
+        return move, policy
     
     def mcts_timer(self, state: State, training: bool, extra_noise_ratio):
         legal_moves = state.legal_moves()
@@ -229,7 +229,11 @@ class MCTS:
     def mcts_n_simulations(self, state: State, training: bool, extra_noise_ratio):
         legal_moves = state.legal_moves()
         if len(legal_moves) == 1:
-            return next(iter(legal_moves))
+            move = next(iter(legal_moves))
+            policy = [0] * 32
+            policy = [1 if x == move.id else 0 for x in policy]
+            print(policy)
+            return 
 
         current_state = copy.deepcopy(state)
         current_node = MCTS_Node(root=True)
@@ -327,10 +331,5 @@ class MCTS:
         normalized_visits = [x / total_visit_count for x in visits]
         dic = dict(zip(moves, normalized_visits))
         policy = [0 if x not in dic else dic[x] for x in all_cards]
-        print(policy)
-        print(move)
-        print("HUH")
-        print(move, policy)
-        print(type(move))
-        print(type(policy))
-        return (move, policy)
+
+        return move, policy
