@@ -136,18 +136,19 @@ def selfplay(mcts_params, model_path, bidding_model_path, num_rounds, extra_nois
 def train_nn(train_data, model: tf.keras.Sequential, fit_params, callbacks):
     epochs = fit_params["epochs"]
     batch_size = fit_params["batch_size"]
+    train_y = train_data[:, 299::]
 
     X_train, X_test, y_train, y_test = train_test_split(
-        train_data[:, :299], train_data[:, 299], train_size=0.8, shuffle=True
+        train_data[:, :299], [train_y[:, :1], train_y[:, 1::]], train_size=0.8, shuffle=True
     )
 
     model.fit(
         X_train,
-        y_train,
+        [y_train[:, :1], y_train[:, 1::]],
         batch_size=batch_size,
         epochs=epochs,
         verbose=0,
-        validation_data=(X_test, y_test),
+        validation_data=(X_test, [y_test[:, :1], y_test[:, 1::]]),
         callbacks=callbacks,
     )
 
