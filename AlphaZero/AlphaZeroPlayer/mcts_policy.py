@@ -19,7 +19,7 @@ class MCTS_Node:
         self.score = 0
         self.visits = 0
         self.own_team = own_team
-        self.q_min = -162
+        self.q_min = 0
         self.q_max = 162
         self.root = root
 
@@ -47,8 +47,8 @@ class MCTS_Node:
     def update_min_max_score(self, score):
         if score > self.q_max:
             self.q_max = score
-        elif score < self.q_min:
-            self.q_min = score
+        #elif score < self.q_min: score always above zero
+        #    self.q_min = score
 
     def normalized_score(self, score):
         return (2 * (score - self.q_min)) / (self.q_max - self.q_min) - 1
@@ -297,7 +297,7 @@ class MCTS:
             while current_node.parent is not None:
                 current_node.visits += 1
                 score = nn_score
-                current_node.update_min_max_score(score)
+                current_node.update_max_score(score)
                 current_node.score += score
                 current_state.undo_move(current_node.move, True)
                 current_node = current_node.parent
