@@ -58,7 +58,7 @@ class MCTS_Node:
         return_nodes = []
         legal_moves = list(self.legal_moves)
         if len(legal_moves) == 1:
-            return legal_children[0]
+            nunogniks = 1 #TODO if only 1 move is possible return correct values for performance
         
         # model returns a distribution over 32 features, the cards
         stat = state.to_nparray()
@@ -98,9 +98,9 @@ class MCTS_Node:
                 child = children_dict[move]
                 return_nodes.append(child)
                 if self.own_team:
-                    ucbs.append(self.normalized_score(child.score / child.visits) + c * (child_prob[child.move]) * (np.sqrt(self.visits) / (1 + child.visits)))
+                    ucbs.append(self.normalized_score(child.score / child.visits) + c * (child_prob[move]) * (np.sqrt(self.visits) / (1 + child.visits)))
                 else:
-                    ucbs.append(-self.normalized_score(child.score / child.visits) + c * (child_prob[child.move]) * (np.sqrt(self.visits) / (1 + child.visits)))
+                    ucbs.append(-self.normalized_score(child.score / child.visits) + c * (child_prob[move]) * (np.sqrt(self.visits) / (1 + child.visits)))
         index_max = np.argmax(np.array([ucbs]))
         return legal_moves[index_max], return_nodes[index_max] #new_node_move, new_node_node
 
