@@ -150,14 +150,18 @@ def train_nn(train_data, model: tf.keras.Sequential, fit_params, callbacks):
     y_train_value, y_train_policy = y_train[:, 0], y_train[:, 1] 
     y_test_value, y_test_policy = y_test[:, 0], y_test[:, 1]
 
+    print("y_train_value")
+    print(y_train_value)
+    print("y_train_policy")
+    print(y_train_policy)
 
     model.fit(
         X_train,
-        [y_train_policy, y_train_value],
+        [y_train_value, y_train_policy],
         batch_size=batch_size,
         epochs=epochs,
         verbose=0,
-        validation_data=(X_test, [y_test_policy, y_test_value]),
+        validation_data=(X_test, [y_test_value, y_test_policy]),
         callbacks=callbacks,
     )
 
