@@ -80,7 +80,7 @@ class MCTS_Node:
         children_moves = []
         children_nodes = []
         for child in self.children:
-            children_moves.append(child.move)
+            children_moves.append(child.move.id)
             children_nodes.append(child)
         children_dict = dict(zip(children_moves, children_nodes))
 
