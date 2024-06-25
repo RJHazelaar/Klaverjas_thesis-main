@@ -127,7 +127,7 @@ def main():
         n_cores = int(os.environ["SLURM_JOB_CPUS_PER_NODE"])
         cluster = "cluster"
     except:
-        n_cores = 20
+        n_cores = 1
         cluster = "local"
     print(f"Using {n_cores} cores on {cluster}")
 
@@ -139,7 +139,7 @@ def main():
         "bidding_model_name": bidding_model_name,
         "starting_step": 0,
         "budget": 8,  # hours
-        "multiprocessing": True,
+        "multiprocessing": False,
         "n_cores": n_cores,
     }
     model_params = {
@@ -155,7 +155,7 @@ def main():
         "l2": 0.01,
     }
     selfplay_params = {
-        "rounds_per_step": 60,  # amount of selfplay rounds per step
+        "rounds_per_step": 1,  # amount of selfplay rounds per step
         "max_memory_multiplier": 10,  # memory size = rounds_per_step * 36 * max_memory_multiplier
         "extra_noise_ratio": 0.1,  # when training extra_noise_ratio * mcts_steps is added to all visit counts
         "mcts_params": {
