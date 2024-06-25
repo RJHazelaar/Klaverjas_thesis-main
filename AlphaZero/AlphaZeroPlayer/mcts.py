@@ -43,12 +43,11 @@ class MCTS_Node:
     def select_child_ucb(self, c: int, simulation) -> MCTS_Node:
         ucbs = []
         legal_children = [child for child in self.children if child.move in self.legal_moves]
-        print("lgal children tpeyr")
-        print(type(legal_children[0]))
-        print("wahoo")
+
+        print("WAAALUIGI")
         print(self.legal_moves)
-        print(list(self.legal_moves)[0])
-        print(type(list(self.legal_moves)[0]))
+        print(self.children)
+        print(self.children_moves)
 
         for child in legal_children:
             if child.visits == 0:

@@ -53,10 +53,11 @@ class MCTS_Node:
     def normalized_score(self, score):
         return (2 * (score - self.q_min)) / (self.q_max - self.q_min) - 1
 
-    def select_child_puct(self, c: int, simulation, state, model) -> MCTS_Node:
+    def select_child_puct(self, c: int, simulation, state, model):
         ucbs = []
-        legal_children = list(self.legal_moves)
-        if len(legal_children) == 1:
+        return_nodes = []
+        legal_moves = list(self.legal_moves)
+        if len(legal_moves) == 1:
             return legal_children[0]
         
         # model returns a distribution over 32 features, the cards
@@ -65,8 +66,8 @@ class MCTS_Node:
         prob_distr = prob_distr.numpy().ravel().tolist()
         print(value)
         print(prob_distr)
-        print(type(legal_children[0]))
-        moves = [a.id for a in legal_children]
+        print(type(legal_moves[0]))
+        moves = [a.id for a in legal_moves]
         all_cards = [0,1,2,3,4,5,6,7,10,11,12,13,14,15,16,17,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37]
         all_cards_legal = np.in1d(all_cards, moves).astype(int)
         prob_distr_legal = np.multiply(all_cards_legal, prob_distr)
@@ -76,20 +77,30 @@ class MCTS_Node:
             probabilities_legal = probabilities_legal #TODO TODO TODO TODO TODO DIRICHLET
         child_prob = dict(zip(moves, probabilities_legal))
         # child_prob[move]
+        children_moves = []
+        children_nodes = []
+        for child in self.children:
+            children_moves.append(child.move)
+            children_nodes.append(child)
+        children_dict = dict(zip(children_moves, children_nodes))
 
-        for child in legal_children:
-            if child not in self.children: #Node not added to tree
+
+        for move in legal_moves:
+            if move not in children_moves: #Node not added to tree
+                return_nodes.append(None)
                 if self.own_team:
-                    ucbs.append(c * (child_prob[child.move]) * (np.sqrt(self.visits) / (1 + child.visits)))
-                else: #TODO UHM MINUS??
-                    ucbs.append(c * (child_prob[child.move]) * (np.sqrt(self.visits) / (1 + child.visits)))
+                    ucbs.append(c * (child_prob[move]))
+                else: #TODO gaat nog steeds fout als de trick hierna is afgelopen
+                    ucbs.append(c * (child_prob[move]))
             else:
+                child = children_dict[move]
+                return_nodes.append(child)
                 if self.own_team:
                     ucbs.append(self.normalized_score(child.score / child.visits) + c * (child_prob[child.move]) * (np.sqrt(self.visits) / (1 + child.visits)))
                 else:
                     ucbs.append(-self.normalized_score(child.score / child.visits) + c * (child_prob[child.move]) * (np.sqrt(self.visits) / (1 + child.visits)))
         index_max = np.argmax(np.array([ucbs]))
-        return legal_children[index_max]
+        return legal_moves[index_max], return_nodes[index_max] #new_node_move, new_node_node
 
 
 
@@ -239,20 +250,20 @@ class MCTS:
             while (
                 not current_state.round_complete() and leaf_selected == False
             ):
-                new_node = current_node.select_child_puct(self.ucb_c, simulation, current_state, self.model)
-                if new_node not in current_node.children:
+                new_node_move, new_node_node = current_node.select_child_puct(self.ucb_c, simulation, current_state, self.model)
+                if new_node_move not in current_node.children_moves:
                     #Go to expand
                     current_node = current_node
                     leaf_selected = True
                 else:
-                    current_node = new_node
+                    current_node = new_node_node
                     current_state.do_move(current_node.move, "mcts_move")
                     current_node.set_legal_moves(current_state)
             self.tijden[1] += time.time() - now
             now = time.time()
             # Expansion
             if not current_state.round_complete():
-                new_node = current_node.expand(new_node)
+                new_node = current_node.expand(new_node_move)
                 current_node = new_node
                 current_state.do_move(current_node.move, "mcts_move")
 
@@ -270,7 +281,8 @@ class MCTS:
                     arr = np.array([stat])
                     self.tijden2[1] += time.time() - now2
                     now2 = time.time()
-                    nn_score = int(self.model(arr)["value_head"])
+                    nn_score, prob_dist = self.model(arr)
+                    nn_score = int(nn_score)
                     self.tijden2[2] += time.time() - now2
                 else:
                     raise Exception("No Model available")
