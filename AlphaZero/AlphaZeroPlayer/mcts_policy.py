@@ -121,7 +121,7 @@ class MCTS:
         if self.time_limit != None:
             move, policy = self.mcts_timer(state, training, extra_noise_ratio)
         else:
-            move, policy = self.mcts_n_simulations(state, training, extra_noise_ratio)
+            return self.mcts_n_simulations(state, training, extra_noise_ratio)
         return move, policy
     
     def mcts_timer(self, state: State, training: bool, extra_noise_ratio):
