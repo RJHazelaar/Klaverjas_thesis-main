@@ -144,7 +144,7 @@ def train_nn(train_data, model: tf.keras.Sequential, fit_params, callbacks):
     arr2 = train_y[:, 1::]
     _train_y = np.array(list(zip(arr1, arr2)))
     X_train, X_test, y_train, y_test = train_test_split(
-        train_data[:, :299], _train_y, train_size=0.8, shuffle=True
+        train_data[:, :299], train_y, train_size=0.8, shuffle=True
     )
 
     y_train_value, y_train_policy = y_train[:, 0], y_train[:, 1] 
