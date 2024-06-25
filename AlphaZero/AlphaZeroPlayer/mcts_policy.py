@@ -232,8 +232,7 @@ class MCTS:
             move = next(iter(legal_moves))
             policy = [0] * 32
             policy = [1 if x == move.id else 0 for x in policy]
-            print(policy)
-            return 
+            return move, policy
 
         current_state = copy.deepcopy(state)
         current_node = MCTS_Node(root=True)
