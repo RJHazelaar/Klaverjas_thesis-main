@@ -85,7 +85,7 @@ class MCTS_Node:
         children_dict = dict(zip(children_moves, children_nodes))
 
 
-        for move in legal_moves:
+        for move in moves:
             if move not in children_moves: #Node not added to tree
                 return_nodes.append(None)
                 print("TOEFUS")
