@@ -328,5 +328,5 @@ class MCTS:
         dic = dict(zip(moves, normalized_visits))
         policy = [0 if x not in dic else dic[x] for x in all_cards]
         print(policy)
-
+        print(move)
         return move, policy
