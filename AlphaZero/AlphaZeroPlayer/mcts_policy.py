@@ -64,9 +64,7 @@ class MCTS_Node:
         stat = state.to_nparray()
         value, prob_distr = model(np.array([stat])) #32 size array
         prob_distr = prob_distr.numpy().ravel().tolist()
-        print(value)
-        print(prob_distr)
-        print(type(legal_moves[0]))
+
         moves = [a.id for a in legal_moves]
         all_cards = [0,1,2,3,4,5,6,7,10,11,12,13,14,15,16,17,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37]
         all_cards_legal = np.in1d(all_cards, moves).astype(int)
@@ -88,8 +86,6 @@ class MCTS_Node:
         for move in moves:
             if move not in children_moves: #Node not added to tree
                 return_nodes.append(None)
-                print("TOEFUS")
-                print(child_prob[move])
                 if self.own_team:
                     ucbs.append(c * (child_prob[move]))
                 else: #TODO gaat nog steeds fout als de trick hierna is afgelopen
@@ -314,7 +310,7 @@ class MCTS:
         for child in current_node.children:
             visits.append(child.visits)
             children.append(child)
-            moves.append(child.move)
+            moves.append(child.move.id)
 
         child = children[np.argmax(visits)]
 
