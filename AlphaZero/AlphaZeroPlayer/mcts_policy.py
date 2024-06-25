@@ -44,7 +44,7 @@ class MCTS_Node:
         self.children_moves.add(move)
         return new_node
 
-    def update_min_max_score(self, score):
+    def update_max_score(self, score):
         if score > self.q_max:
             self.q_max = score
         #elif score < self.q_min: score always above zero
