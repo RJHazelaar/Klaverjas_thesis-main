@@ -329,4 +329,8 @@ class MCTS:
         policy = [0 if x not in dic else dic[x] for x in all_cards]
         print(policy)
         print(move)
+        print("HUH")
+        print(move, policy)
+        print(type(move))
+        print(type(policy))
         return move, policy
