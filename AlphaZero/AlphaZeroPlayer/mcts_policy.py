@@ -68,7 +68,12 @@ class MCTS_Node:
         moves = [a.id for a in legal_moves]
         all_cards = [0,1,2,3,4,5,6,7,10,11,12,13,14,15,16,17,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37]
         all_cards_legal = np.in1d(all_cards, moves).astype(int)
+        print("all_cards_legal")
+        print(all_cards_legal)
         prob_distr_legal = np.multiply(all_cards_legal, prob_distr)
+        print("prob_distr_legal")
+        print(prob_distr_legal)
+
         no_zeroes = [i for i in prob_distr_legal if i != 0]
         probabilities_legal = no_zeroes / np.linalg.norm(no_zeroes)
         if self.root:

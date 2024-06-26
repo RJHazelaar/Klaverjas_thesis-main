@@ -136,11 +136,7 @@ def train_nn(train_data, model: tf.keras.Sequential, fit_params, callbacks):
     epochs = fit_params["epochs"]
     batch_size = fit_params["batch_size"]
     train_y = train_data[:, 299::]
-    print(train_data[:, :299])
-    print(train_y[:, :1])
-    print(train_y[:, 1::])
-    arr1 = train_y[:, :1]
-    arr2 = train_y[:, 1::]
+
     #_train_y = np.array(list(zip(arr1, arr2)))
     X_train, X_test, y_train, y_test = train_test_split(
         train_data[:, :299], train_y, train_size=0.8, shuffle=True
@@ -237,10 +233,6 @@ def train(
             data, bidding_data = selfplay(mcts_params, model_path, bidding_model_path, rounds_per_step, extra_noise_ratio)
         selfplay_time = time.time() - tijd
 
-        print("DE DATA")
-        print(data)
-        print("BIDDING DATA")
-        print(bidding_data)
 
         np.save(f"{data_dir}/Data/RL_data/{model_name}/{model_name}_{step}.npy", data)
         #np.save(f"{parent_dir}/Data/RL_data/{model_name}/{model_name}_{step}.npy", data)
