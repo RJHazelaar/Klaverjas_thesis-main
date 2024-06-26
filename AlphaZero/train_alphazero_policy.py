@@ -63,7 +63,6 @@ def selfplay(mcts_params, model_path, bidding_model_path, num_rounds, extra_nois
         alpha_player_2.new_round_Round(round)
         alpha_player_3.new_round_Round(round)
 
-        policies = []
         # generate a state and score and play a card
         for trick in range(8):
             for _ in range(4):
@@ -240,6 +239,8 @@ def train(
 
         print("DE DATA")
         print(data)
+        print("BIDDING DATA")
+        print(bidding_data)
 
         np.save(f"{data_dir}/Data/RL_data/{model_name}/{model_name}_{step}.npy", data)
         #np.save(f"{parent_dir}/Data/RL_data/{model_name}/{model_name}_{step}.npy", data)
