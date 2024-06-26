@@ -82,6 +82,11 @@ class MCTS_Node:
             children_nodes.append(child)
         children_dict = dict(zip(children_moves, children_nodes))
 
+        print("children_moves")
+        print(children_moves)
+        print("chidlren_nodes")
+        print(children_nodes)
+
         print("moves")
         print(moves)
         print("child_prob")
