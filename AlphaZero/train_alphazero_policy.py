@@ -150,14 +150,6 @@ def train_nn(train_data, model: tf.keras.Sequential, fit_params, callbacks):
     y_train_value, y_train_policy = y_train[:, 0], y_train[:, 1] 
     y_test_value, y_test_policy = y_test[:, 0], y_test[:, 1]
 
-    print("y_train_value")
-    print(y_train_value)
-    print("y_train_policy")
-    print(y_train_policy)
-
-    THE_y_train = {"value_head": y_train_value, "policy_head": y_train_policy}
-    THE_y_test = {"value_head": y_train_value, "policy_head": y_train_policy}
-
     model.fit(
         X_train,
         {'value_head': y_train_value, 'policy_head': y_train_policy},
@@ -245,6 +237,9 @@ def train(
         else:
             data, bidding_data = selfplay(mcts_params, model_path, bidding_model_path, rounds_per_step, extra_noise_ratio)
         selfplay_time = time.time() - tijd
+
+        print("DE DATA")
+        print(data)
 
         np.save(f"{data_dir}/Data/RL_data/{model_name}/{model_name}_{step}.npy", data)
         #np.save(f"{parent_dir}/Data/RL_data/{model_name}/{model_name}_{step}.npy", data)
