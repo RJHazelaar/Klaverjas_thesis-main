@@ -70,7 +70,7 @@ def create_normal_two_headed_nn(learning_rate, l1, l2):
 
     # Define how to train the model
     model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate), loss=["mse", "categorical_crossentropy"]
+        optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate), loss={'value_head': 'mean_absolute_error', 'policy_head': 'sparse_categorical_crossentropy'}
     )
     return model
 
