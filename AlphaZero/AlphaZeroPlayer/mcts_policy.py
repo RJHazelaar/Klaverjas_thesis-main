@@ -64,12 +64,24 @@ class MCTS_Node:
         stat = state.to_nparray()
         value, prob_distr = model(np.array([stat])) #32 size array
         prob_distr = prob_distr.numpy().ravel().tolist()
+        print("prob_distr")
+        print(prob_distr)
+        
+        ##############################################################################################################
+        #all_cards = [0,1,2,3,4,5,6,7,10,11,12,13,14,15,16,17,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37]
+        #total_visit_count = sum(visits)
+        #normalized_visits = [x / total_visit_count for x in visits]
+        #dic = dict(zip(moves, normalized_visits))
+        #policy = [0 if x not in dic else dic[x] for x in all_cards]
+        ##############################################################################################################
 
         moves = [a.id for a in legal_moves]
         all_cards = [0,1,2,3,4,5,6,7,10,11,12,13,14,15,16,17,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,37]
         all_cards_legal = np.in1d(all_cards, moves).astype(int)
         print("all_cards_legal")
         print(all_cards_legal)
+
+        #WRONG
         prob_distr_legal = np.multiply(all_cards_legal, prob_distr)
         print("prob_distr_legal")
         print(prob_distr_legal)
